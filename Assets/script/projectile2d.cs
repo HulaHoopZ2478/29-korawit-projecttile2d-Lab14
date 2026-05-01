@@ -1,3 +1,5 @@
+using System.Net.NetworkInformation;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -21,8 +23,21 @@ public class Projectile2d : MonoBehaviour
             {
                 target.transform.position = new Vector2(hit.point.x, hit.point.y);
                 Debug.Log($"Hit{hit.collider.gameObject.name}");
+                Vector2 projectileVelocity = CalculateProjectileVelocity(shootPoint.position, hit.point, 1f);
+				GameObject bullet = Instantiate(bulletPrefab, shootPoint.position, Quaternion.identity);
+                Rigidbody2D shootBullet = bullet.GetComponent<Rigidbody2D>();
+                shootBullet.linearVelocity = projectileVelocity;
             }
         }
+        
 
     }
+	Vector2 CalculateProjectileVelocity(Vector2 origin, Vector2 target, float time)
+	{
+        Vector2 direction = target - origin;
+        return new Vector2(
+            direction.x / time,
+            (direction.y / time) + 0.5f * Mathf.Abs(Physics2D.gravity.y) * time
+            );
+	}
 }
